@@ -1,0 +1,33 @@
+{
+  "name": "GetBilibiliInfo",
+  "version": "0.1",
+  "author": [
+    "KUMAX"
+  ],
+  "descriptionmsg": "biliget-desc",
+  "url": "https://github.com/Lehmaning/MediaWiki-Get-Bilibili-Info",
+  "license-name": "GPL-3.0-or-later",
+  "type": "parserhook",
+  "requires": {
+    "MediaWiki": ">= 1.34.0"
+  },
+  "AutoloadClasses": {
+    "BiliGet": "BiliGet.php"
+  },
+	"MessageDirs": {
+		"BiliGet": [
+			"i18n"
+			]
+	},
+	"ResourceModules": {
+		"ext.biliget.list":{
+			"styles": [
+				"extensions/BiliGet/resources/biliget.list.css"
+			]
+		}
+	},
+  "Hooks": {
+    "ParserFirstCallInit": "BiliGet::registerTags"
+  },
+  "manifest_version": 1
+}

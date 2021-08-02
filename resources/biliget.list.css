@@ -1,0 +1,49 @@
+div.bili-info-container {
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+div.bili-info-card {
+	width: 48%;
+	height: 232px;
+	display: flex;
+	border: 1px #ddd solid;
+	border-radius: 10px;
+	margin: 4px;
+}
+
+div.bili-info {
+	width: 80%;
+	padding: 4px;
+	word-break: break-word;
+	overflow: auto;
+	scrollbar-width: none;
+}
+
+.bili-info-date, .bili-info-duration {
+	font-size: 12px;
+	color: grey;
+	/*margin-top: 0;
+	margin-bottom: 0;*/
+}
+
+.bili-info-uploader {
+	font-size: 12px;
+}
+
+.bili-info-cover {
+	width: 160px;
+	height: 120px;
+	overflow: hidden;
+}
+
+.bili-info p, .bili-info-cover{
+	margin: 8px;
+}
+
+@media (max-width: 640px) {
+	 div.bili-info-card {
+		width: 100%;
+	 }
+}

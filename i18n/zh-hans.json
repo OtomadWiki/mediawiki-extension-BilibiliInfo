@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"KUMAX"
+		]
+	},
+	"biliget-desc": "用于获取 bilibili 视频的基本信息"
+}
