@@ -6,10 +6,8 @@
 已知请求多次会被 412 以及 403，需要改进办法。请勿在同一页面内过多使用。
 
 ## 安装
-1. 
-```
-
-```
+1. 进入 ```mediawiki/extensions``` 目录，使用该命令：```git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet```
+2. 在 ```LocalSettings.php``` 中添加一行：```wfLoadExtension( 'BIliGet' );```
 
 ## 使用方法
 ```
