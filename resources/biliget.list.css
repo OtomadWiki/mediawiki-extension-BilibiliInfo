@@ -6,7 +6,7 @@ div.bili-info-container {
 
 div.bili-info-card {
 	width: 48%;
-	height: 168px;
+	height: 172px;
 	display: flex;
 	border: 1px #ddd solid;
 	border-radius: 10px;
@@ -23,9 +23,9 @@ div.bili-info {
 }
 
 div.bili-info::-webkit-scrollbar {
-	display:none;
-}
+	display: none; /* Webkit */
 
+}
 .bili-info-date, .bili-info-duration {
 	font-size: 12px;
 	color: grey;
@@ -33,13 +33,13 @@ div.bili-info::-webkit-scrollbar {
 	margin-bottom: 0;*/
 }
 
-.bili-info-uploader {
+.bili-info-uploader, .bili-info-desc {
 	font-size: 12px;
 }
 
 .bili-info-cover {
 	width: 160px;
-	height: 120px;
+	max-height: 120px;
 	overflow: hidden;
 }
 
