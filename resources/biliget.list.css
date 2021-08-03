@@ -6,7 +6,7 @@ div.bili-info-container {
 
 div.bili-info-card {
 	width: 48%;
-	height: 232px;
+	height: 168px;
 	display: flex;
 	border: 1px #ddd solid;
 	border-radius: 10px;
@@ -14,11 +14,16 @@ div.bili-info-card {
 }
 
 div.bili-info {
-	width: 80%;
+	width: calc( 100% - 8px );
 	padding: 4px;
-	word-break: break-word;
+	word-wrap: normal;
 	overflow: auto;
-	scrollbar-width: none;
+	scrollbar-width: none; /* Firefox */
+	-ms-overflow-style: none; /* IE💩 */
+}
+
+div.bili-info::-webkit-scrollbar {
+	display:none;
 }
 
 .bili-info-date, .bili-info-duration {
@@ -39,6 +44,7 @@ div.bili-info {
 }
 
 .bili-info p, .bili-info-cover{
+	word-break: unset;
 	margin: 8px;
 }
 

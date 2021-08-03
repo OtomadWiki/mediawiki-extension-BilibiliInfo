@@ -22,7 +22,8 @@ class BiliGet {
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch,CURLOPT_HTTPHEADER,$headerArray);
+		curl_setopt($ch, CURLOPT_REFERER, "www.bilibili.com");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
 		$output = curl_exec($ch);
 		curl_close($ch);
 		$output = json_decode($output,true);
@@ -62,6 +63,7 @@ class BiliGet {
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?bvid=$bvid");
 			$link = "https://bilibili.com/video/BV$bvid";
 		}
+			$code = $data['code'];
 			if ($code != -412){
 				$cover = $data['data']['pic'];
 				$uploader = $data['data']['owner']['name'];
@@ -72,15 +74,15 @@ class BiliGet {
 				$code =$data['code'];
 				return "
 				<div class=\"bili-info-card\">
-					<div class=\"bili-info\">
+					<div class=\"bili-info\" style=\"overflow: hidden\">
 						<div class=\"bili-info-cover\"><img src=\"$cover\" width=\"160px\" /></div>
 						<p class=\"bili-info-duration\">$duration</p>
 					</div>
 					<div class=\"bili-info\">
-						<p class=\"bili-info-title\"\"><a href=\"$link\">$title</a></p>
-						<p class=\"bili-info-date\">$pubdate</p>
+						<p class=\"bili-info-title\" style=\"margin-bottom: 0;\"><a href=\"$link\">$title</a></p>
+						<p class=\"bili-info-date\"	style=\"margin-top: 0;\">$pubdate</p>
 						<p class=\"bili-info-uploader\">UP主：$uploader</p>
-						<p class=\"bili-info-desc\">简介：<br />$desc</p>
+						<p class=\"bili-info-desc\">$desc</p>
 					</div>
 				</div>";}
 			//@todo 简介折叠、链接和作品号自动变蓝
