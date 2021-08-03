@@ -6,15 +6,18 @@
 已知请求多次会被 412 以及 403，需要改进办法。请勿在同一页面内过多使用。
 
 ## 安装
-1. 进入 ```mediawiki/extensions``` 目录，使用该命令：```git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet```
+1. 进入 ```mediawiki/extensions``` 目录，使用如下命令：<br />
+```shell
+git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet
+```
 2. 在 ```LocalSettings.php``` 中添加一行：```wfLoadExtension( 'BIliGet' );```
 
 ## 使用方法
-```
-\<div class="bili-info-container"><br />
-&emsp;\<biliget>*av号或者BV号 或者B站视频地址*\</biliget><br />
-&emsp;\<biliget>*av号或者BV号 或者B站视频地址*\</biliget><br />
-\</div>
+```HTML
+<div class="bili-info-container"><br />
+	<biliget>av号或者BV号 或者B站视频地址</biliget>
+	<biliget>av号或者BV号 或者B站视频地址</biliget>
+</div>
 ```
 <!--
 或者：
@@ -25,8 +28,8 @@
 -->
 
 ### 指定输出类型
-```
-\<biliget type="*指定的信息类型*">*av号或者BV号 或者B站视频地址*\</biliget><br />
+```HTML
+<biliget type="指定的信息类型">av号或者BV号 或者B站视频地址</biliget><br />
 ```
 目前允许输出的基本信息：
 * 封面 - 将会输出原始的超链接文本
@@ -37,11 +40,10 @@
 * 发布日期
 
 **范例：**
+```HTML
+<biliget type="标题">av2333</biliget>
 ```
-\<biliget type="标题"\>av2333\</biliget><br />
-```
-将会输出：
-```【还是K歌向】新华保险入店歌```
+将会输出：```【还是K歌向】新华保险入店歌```
 
 ## TODO
 - [x] 输出单独信息
