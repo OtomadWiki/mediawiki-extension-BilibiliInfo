@@ -21,11 +21,14 @@ div.bili-info {
 	scrollbar-width: none; /* Firefox */
 	-ms-overflow-style: none; /* IE💩 */
 }
-
 div.bili-info::-webkit-scrollbar {
 	display: none; /* Webkit */
-
 }
+div.bili-info:first-child {
+	width: 80%;
+	overflow: hidden;
+}
+
 .bili-info-date, .bili-info-duration {
 	font-size: 12px;
 	color: grey;
@@ -38,7 +41,7 @@ div.bili-info::-webkit-scrollbar {
 }
 
 .bili-info-cover {
-	width: 160px;
+	width: 180px;
 	max-height: 120px;
 	overflow: hidden;
 }
@@ -49,7 +52,11 @@ div.bili-info::-webkit-scrollbar {
 }
 
 @media (max-width: 640px) {
-	 div.bili-info-card {
+	div.bili-info-card {
 		width: 100%;
-	 }
+	}
+	div.bili-info:first-child {
+		width: 100%;
+		overflow: hidden;
+	}
 }

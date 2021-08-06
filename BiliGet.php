@@ -3,7 +3,7 @@
  * @file
  * @ingroup Extensions
  * @author KUMAX
- * @licensee GPL-3.0-or-later
+ * @license GPL-3.0-or-later
  */
 class BiliGet {
 	/*
@@ -11,6 +11,7 @@ class BiliGet {
 	 */
 	public static function registerTags( &$parser ) {
 		$parser->setHook( 'biliget' , [ __CLASS__ , 'getInfo' ] );
+		$parser->setHook( 'biligetraw' , [ __CLASS__ , 'rawInfo' ] );
 	}
 	/*
 	* @see https://www.runoob.com/php/php-ref-curl.html#div-comment-36119
@@ -34,18 +35,18 @@ class BiliGet {
 
 	public static function url2aid($url) {
 		$id=false;
-		$aid_pattern = "#(https?:\/\/w{3}?\.?bilibili\.com\/video\/)?av(\d+)(\?p=\d{1,3})?#";
+		$aid_pattern = "#(https?:\/\/(www\.)?bilibili\.com\/video\/)?av(\d+)(\?p=\d{1,3})?#";
 		if(preg_match($aid_pattern, $url, $preg)) {
-			$id = $preg[2];
+			$id = $preg[3];
 			//$id = preg_replace(".*av(\d+).*", "\1", $url);
 		}
 		return $id;
 	}
 	public static function url2bvid($url) {
 		$id=false;
-		$bvid_pattern = "#(https?:\/\/w{3}?\.?bilibili\.com\/video\/)?BV([a-zA-Z0-9]+)(\?p=\d{1,3})?#";
+		$bvid_pattern = "#(https?:\/\/(www\.)?bilibili\.com\/video\/)?BV([a-zA-Z0-9]+)(\?p=\d{1,3})?#";
 		if(preg_match($bvid_pattern, $url, $preg)) {
-			$id = $preg[2];
+			$id = $preg[3];
 			//$id = preg_replace(".*BV([a-zA-Z0-9]+).*", "\1", $url);
 		}
 		return $id;
@@ -54,6 +55,7 @@ class BiliGet {
 		$pattern = "##";
 		return 0;	//@todo 简介文字的处理
 	}
+
 	public static function getInfo($input, $argv, $parser) {
 		$parser->getOutput()->addModules('ext.biliget.list');
 		if ( !empty( self::url2aid($input) ) ) {
@@ -77,7 +79,7 @@ class BiliGet {
 			$pubdate = date("Y-m-d H:i", $data['data']['pubdate']);
 			$duration = gmstrftime("%M:%S", $data['data']['pages'][0]['duration']);
 			if ( !empty($argv['type']) && $argv['type']=='raw' ) {
-				return "$cover|$title|$uploader|$pubdate|$duration|$desc";
+				return "$cover`$title`$uploader`$title`$pubdate`$duration";
 			}
 			else if ( !empty($argv['type'] ) ) {
 				$type = array(
@@ -94,7 +96,7 @@ class BiliGet {
 			else {
 				return "
 				<div class=\"bili-info-card\">
-					<div class=\"bili-info\" style=\"width: 80%; overflow: hidden\">
+					<div class=\"bili-info\">
 						<div class=\"bili-info-cover\"><img src=\"$cover\" width=\"160px\" /></div>
 						<p class=\"bili-info-duration\">$duration</p>
 					</div>
@@ -120,5 +122,11 @@ class BiliGet {
 				</div>";
 		}
 	//@todo 简介折叠、链接和作品号自动变蓝
-	}	
+	}
+	public static function rawInfo($input, $argv, $parser, PPFrame $frame) {
+		$type = ['type' => 'raw'];
+		$info = self::getInfo($input, $type, $parser);
+		$output = $parser->recursiveTagParse("{{#vardefine:info|$info}}", $frame);
+		return $output;
+	}// 仅用于debug
 }

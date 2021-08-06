@@ -4,27 +4,31 @@
   "author": [
     "KUMAX"
   ],
-  "descriptionmsg": "biliget-desc",
-  "url": "https://github.com/Lehmaning/MediaWiki-Get-Bilibili-Info",
+  "url": "https://github.com/otomadWiki/mediawiki-extensions-BilibiliInfo",
+	"description": "用于获取 bilibili 视频基本信息",
   "license-name": "GPL-3.0-or-later",
   "type": "parserhook",
   "requires": {
-    "MediaWiki": ">= 1.34.0"
+    "MediaWiki": ">= 1.35.0"
   },
   "AutoloadClasses": {
     "BiliGet": "BiliGet.php"
   },
 	"MessageDirs": {
-		"BiliGet": [
+		"extensions/BiliGet": [
 			"i18n"
 			]
 	},
 	"ResourceModules": {
 		"ext.biliget.list":{
 			"styles": [
-				"extensions/BiliGet/resources/biliget.list.css"
+				"biliget.list.css"
 			]
 		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BiliGet/resources"
 	},
   "Hooks": {
     "ParserFirstCallInit": "BiliGet::registerTags"
