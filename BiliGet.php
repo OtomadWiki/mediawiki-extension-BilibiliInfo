@@ -16,8 +16,8 @@ class BiliGet {
 	/*
 	* @see https://www.runoob.com/php/php-ref-curl.html#div-comment-36119
 	*/
-	public static function getUrl($url, $cookie) {
-		# header( 'Referrer-Policy: no-referrer' ); // 在客户端收到 403 时请将这行加入mediawiki/indludes/WebStart.php
+	public static function getUrl($url, $cookie = NULL) {
+		#header( 'Referrer-Policy: no-referrer' ); // 在客户端收到 403 时请将这行加入mediawiki/indludes/WebStart.php
 		$headerArray = array("Content-type:application/json;","Accept:application/json");
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -83,8 +83,8 @@ class BiliGet {
 		$input_arr = explode("\n", $input);
 		if ( !empty( self::url2aid($input) ) ) {
 			$aid_data = ( count($input_arr) == 1 ) ? self::url2aid($input) : self::url2aid($input_arr);
-			$aid = $aid_data[0];
-			$part = $aid_data[1];
+			$aid = $aid_data['aid'];
+			$part = $aid_data['part'];
 			$id = "av$aid";
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?aid=$aid");
 			$link = "https://bilibili.com/video/av$aid?p=$part";
@@ -92,8 +92,8 @@ class BiliGet {
 		}
 		if ( !empty( self::url2bvid($input) ) ) {
 			$bvid_data = ( count($input_arr) == 1 ) ? self::url2bvid($input) : self::url2bvid($input_arr);
-			$bvid = $bvid_data[0];
-			$part = $bvid_data[1];
+			$bvid = $bvid_data['aid'];
+			$part = $bvid_data['part'];
 			$id = "BV$bvid";
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?bvid=$bvid");
 			$link = "https://bilibili.com/video/BV$bvid";
