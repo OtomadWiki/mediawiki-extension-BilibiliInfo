@@ -85,8 +85,8 @@ class BiliGet {
 			$part = $aid_data[1];
 			$id = "av$aid";
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?aid=$aid");
-			$link = "https://bilibili.com/video/av$aid?p=$part";
-			if( empty($part) ) $link = $link . "?p=$part";
+			$url = "https://bilibili.com/video/av$aid?p=$part";
+			if( !empty($part) ) $link .= "?p=$part";
 		}
 		if ( !empty( self::url2bvid($input) ) ) {
 			$bvid_data = ( count($input_arr) == 1 ) ? self::url2bvid($input) : self::url2bvid($input_arr);
@@ -94,8 +94,8 @@ class BiliGet {
 			$part = $bvid_data[1];
 			$id = "BV$bvid";
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?bvid=$bvid");
-			$link = "https://bilibili.com/video/BV$bvid";
-			if( empty($part) ) $link = $link . "?p=$part";
+			$url = "https://bilibili.com/video/BV$bvid";
+			if( !empty($part) ) $link .= "?p=$part";
 		}
 		$code = $data['code']; //判断响应代码
 		if ($code==0) {
@@ -136,7 +136,7 @@ class BiliGet {
 						<p class=\"bili-info-duration\">$duration</p>
 					</div>
 					<div class=\"bili-info\">
-						<p class=\"bili-info-title\" style=\"margin-bottom: 0\"><a href=\"$link\" title=\"$id\">$title</a></p>
+						<p class=\"bili-info-title\" style=\"margin-bottom: 0\"><a href=\"$url\" title=\"$id\">$title</a></p>
 						<p class=\"bili-info-date\"	style=\"margin-top: 0; margin-bottom: 0\">$pubdate</p>
 						<p class=\"bili-info-uploader\" style=\"margin-top: 0;\">UP主：$uploader</p>
 						<p class=\"bili-info-desc\">$desc</p>
