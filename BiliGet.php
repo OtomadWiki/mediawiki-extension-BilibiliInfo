@@ -11,7 +11,7 @@ class BiliGet {
 	 */
 	public static function registerTags( &$parser ) {
 		$parser->setHook( 'biliget' , [ __CLASS__ , 'getInfo' ] );
-		$parser->setHook( 'biligetraw' , [ __CLASS__ , 'rawInfo' ] );
+		$parser->setHook( 'biligetraw' , [ __CLASS__ , 'rawInfo' ] );// 仅用于debug
 	}
 	/*
 	* @see https://www.runoob.com/php/php-ref-curl.html#div-comment-36119
@@ -23,7 +23,9 @@ class BiliGet {
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		#curl_setopt($ch, CURLOPT_HEADER, 'Origin: https://bilibili.com'); //Don't Use
 		if(!empty($aid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/av$aid");
 		else if(!empty($bid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/BV$bvid");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
