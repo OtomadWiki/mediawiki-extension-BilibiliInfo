@@ -16,8 +16,8 @@ class BiliGet {
 	/*
 	* @see https://www.runoob.com/php/php-ref-curl.html#div-comment-36119
 	*/
-	public static function getUrl($url) {
-		# header( 'Referrer-Policy: no-referrer' ); // 在客户端收到 403 时启用
+	public static function getUrl($url, $cookie) {
+		# header( 'Referrer-Policy: no-referrer' ); // 在客户端收到 403 时请将这行加入mediawiki/indludes/WebStart.php
 		$headerArray = array("Content-type:application/json;","Accept:application/json");
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -34,45 +34,72 @@ class BiliGet {
 		$output = json_decode($output,true);
 		return $output;
 	}
+	/*public static function getMultiUrl($url,cookie) {
+		$headerArray = array("Content-type:application/json;","Accept:application/json");
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		if(!empty($aid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/av$aid");
+		else if(!empty($bid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/BV$bvid");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
+		$output = curl_exec($ch);
+		curl_close($ch);
+		$output = json_decode($output,true);
+		return $output;
+	}*/
 
 	public static function url2aid($url) {
-		$id=false;
-		$aid_pattern = "#(https?:\/\/(www\.)?bilibili\.com\/video\/)?av(\d+)(\?p=\d{1,3})?#";
+		$aid_data=null;
+		$aid_pattern = "#(?:https?:\/\/(?:www\.)?bilibili\.com\/video\/)?av(\d+)(\?p=\d{1,3})?#";
 		if(preg_match($aid_pattern, $url, $preg)) {
-			$id = $preg[3];
-			//$id = preg_replace(".*av(\d+).*", "\1", $url);
+			$aid_data = [
+				'aid' => $preg[1],
+				'part' => $perg[2]
+			];
 		}
-		return $id;
+		return $aid_data;
 	}
 	public static function url2bvid($url) {
-		$id=false;
-		$bvid_pattern = "#(https?:\/\/(www\.)?bilibili\.com\/video\/)?BV([a-zA-Z0-9]+)(\?p=\d{1,3})?#";
+		$bvid_data=null;
+		$bvid_pattern = "#(?:https?:\/\/(?:www\.)?bilibili\.com\/video\/)?BV([a-zA-Z0-9]+)(\?p=\d{1,3})?#";
 		if(preg_match($bvid_pattern, $url, $preg)) {
-			$id = $preg[3];
-			//$id = preg_replace(".*BV([a-zA-Z0-9]+).*", "\1", $url);
+			$aid_data = [
+				'bvid' => $preg[1],
+				'part' => $perg[2]
+			];
 		}
-		return $id;
+		return $bvid_data;
 	}
 	public static function handleDesc($text) {
 		$pattern = "##";
 		return 0;	//@todo 简介文字的处理
 	}
 
-	public static function getInfo($input, $argv, $parser) {
+	public static function getInfo($input, $argv, $parser, $frame) {
+		global $wfSetCookies;
 		$parser->getOutput()->addModules('ext.biliget.list');
+		$input_arr = explode("\n", $input);
 		if ( !empty( self::url2aid($input) ) ) {
-			$aid = self::url2aid($input);
+			$aid_data = ( count($input_arr) == 1 ) ? self::url2aid($input) : self::url2aid($input_arr);
+			$aid = $aid_data[0];
+			$part = $aid_data[1];
 			$id = "av$aid";
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?aid=$aid");
-			$link = "https://bilibili.com/video/av$aid";
+			$link = "https://bilibili.com/video/av$aid?p=$part";
+			if( empty($part) ) $link = $link . "?p=$part";
 		}
 		if ( !empty( self::url2bvid($input) ) ) {
-			$bvid = self::url2bvid($input);
+			$bvid_data = ( count($input_arr) == 1 ) ? self::url2bvid($input) : self::url2bvid($input_arr);
+			$bvid = $bvid_data[0];
+			$part = $bvid_data[1];
 			$id = "BV$bvid";
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?bvid=$bvid");
 			$link = "https://bilibili.com/video/BV$bvid";
+			if( empty($part) ) $link = $link . "?p=$part";
 		}
-		$code = $data['code'];
+		$code = $data['code']; //判断响应代码
 		if ($code==0) {
 			$cover = $data['data']['pic'];
 			$uploader = $data['data']['owner']['name'];
@@ -81,7 +108,15 @@ class BiliGet {
 			$pubdate = date("Y-m-d H:i", $data['data']['pubdate']);
 			$duration = gmstrftime("%M:%S", $data['data']['pages'][0]['duration']);
 			if ( !empty($argv['type']) && $argv['type']=='raw' ) {
-				return "$cover`$title`$uploader`$title`$pubdate`$duration";
+				$output = $parser->recursiveTagParse("
+					{{#vardefine:封面|$cover}}
+					{{#vardefine:UP主|$uploader}}
+					{{#vardefine:简介|$desc}}
+					{{#vardefine:标题|$title}}
+					{{#vardefine:发布日期|$pubdate}}
+					{{#vardefine:视频时长|$duaration}}
+					", $frame);
+				return $output;
 			}
 			else if ( !empty($argv['type'] ) ) {
 				$type = array(
