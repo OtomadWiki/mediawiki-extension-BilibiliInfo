@@ -6,7 +6,7 @@
 ## 安装
 1. 进入 ```mediawiki/extensions``` 目录，使用如下命令：
 ```shell
-git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet
+git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet --depth=1
 ```
 2. 返回 MediaWiki 主目录，在 ```LocalSettings.php``` 文件中添加一行：<br />```wfLoadExtension( 'BIliGet' );```
 
