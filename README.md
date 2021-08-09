@@ -45,11 +45,11 @@ git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet
 
 ## TODO
 - [x] 输出单独信息
-- [ ] 设置请求 Cookie
+- [x] 设置请求 Cookie
 - [ ] 允许同一标签内放置多个作品号或者链接
-- [ ] 视频简介折叠
+- [x] 视频简介折叠
 - [ ] 简介中的链接和作品号自动变蓝
 - [ ] 并行发送请求
-- [ ] 请求返回结果缓存
+- [x] 请求返回结果缓存（已知保存页面后 MediaWiki 会进行缓存）
 - [ ] 样式调整
-- [ ] 客户端调用api
+- [ ] 客户端调用api（失败 请求被阻止）

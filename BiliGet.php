@@ -18,6 +18,7 @@ class BiliGet {
 	*/
 	public static function getUrl($url, $cookie = NULL) {
 		#header( 'Referrer-Policy: no-referrer' ); // 在客户端收到 403 时请将这行加入mediawiki/indludes/WebStart.php
+		if(!empty($wfSetBiliCookie)) "Origin: https://www.bilibili.com" => $headerArray[]
 		$headerArray = array("Content-type:application/json;","Accept:application/json");
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -25,7 +26,7 @@ class BiliGet {
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		#curl_setopt($ch, CURLOPT_HEADER, 'Origin: https://bilibili.com'); //Don't Use
+		#curl_setopt($ch, CURLOPT_HEADER, ); //Don't Use
 		if(!empty($aid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/av$aid");
 		else if(!empty($bid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/BV$bvid");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
@@ -115,7 +116,7 @@ class BiliGet {
 					{{#vardefine:标题|$title}}
 					{{#vardefine:发布日期|$pubdate}}
 					{{#vardefine:视频时长|$duaration}}
-					", $frame);
+					", $frame); //@require Extension:Variables
 				return $output;
 			}
 			else if ( !empty($argv['type'] ) ) {
