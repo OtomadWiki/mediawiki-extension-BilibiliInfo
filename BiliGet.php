@@ -11,21 +11,19 @@ class BiliGet {
 	 */
 	public static function registerTags( &$parser ) {
 		$parser->setHook( 'biliget' , [ __CLASS__ , 'getInfo' ] );
-		$parser->setHook( 'biligetraw' , [ __CLASS__ , 'rawInfo' ] );// 仅用于debug
+		$parser->setHook( 'biligetraw' , [ __CLASS__ , 'rawInfo' ] );
 	}
 	/*
 	* @see https://www.runoob.com/php/php-ref-curl.html#div-comment-36119
 	*/
 	public static function getUrl($url, $cookie = NULL) {
-		#header( 'Referrer-Policy: no-referrer' ); // 在客户端收到 403 时请将这行加入mediawiki/indludes/WebStart.php
+		# header( 'Referrer-Policy: no-referrer' ); // 在客户端收到 403 时请将这行加入mediawiki/indludes/WebStart.php
 		$headerArray = array("Content-type:application/json;","Accept:application/json");
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		#curl_setopt($ch, CURLOPT_HEADER, 'Origin: https://bilibili.com'); //Don't Use
 		if(!empty($aid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/av$aid");
 		else if(!empty($bid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/BV$bvid");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
@@ -34,7 +32,7 @@ class BiliGet {
 		$output = json_decode($output,true);
 		return $output;
 	}
-	/*public static function getMultiUrl($url,cookie) {
+	/*public static function getMultiUrl($url,cookie = NULL) {
 		$headerArray = array("Content-type:application/json;","Accept:application/json");
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
@@ -51,7 +49,7 @@ class BiliGet {
 	}*/
 
 	public static function url2aid($url) {
-		$aid_data=null;
+		$aid_data=NULL;
 		$aid_pattern = "#(?:https?:\/\/(?:www\.)?bilibili\.com\/video\/)?av(\d+)(\?p=\d{1,3})?#";
 		if(preg_match($aid_pattern, $url, $preg)) {
 			$aid_data = [
@@ -62,7 +60,7 @@ class BiliGet {
 		return $aid_data;
 	}
 	public static function url2bvid($url) {
-		$bvid_data=null;
+		$bvid_data=NULL;
 		$bvid_pattern = "#(?:https?:\/\/(?:www\.)?bilibili\.com\/video\/)?BV([a-zA-Z0-9]+)(\?p=\d{1,3})?#";
 		if(preg_match($bvid_pattern, $url, $preg)) {
 			$aid_data = [
@@ -76,15 +74,20 @@ class BiliGet {
 		$pattern = "##";
 		return 0;	//@todo 简介文字的处理
 	}
-
+	/*
+	 * @param Parser &$parser
+	 * @param string $input
+	 * @param Array $argv
+	 * @param PPFrame $frame
+	 */
 	public static function getInfo($input, $argv, $parser, $frame) {
-		global $wfSetCookies;
+		global $wfSetCookie;
 		$parser->getOutput()->addModules('ext.biliget.list');
 		$input_arr = explode("\n", $input);
 		if ( !empty( self::url2aid($input) ) ) {
 			$aid_data = ( count($input_arr) == 1 ) ? self::url2aid($input) : self::url2aid($input_arr);
-			$aid = $aid_data['aid'];
-			$part = $aid_data['part'];
+			$aid = $aid_data[0];
+			$part = $aid_data[1];
 			$id = "av$aid";
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?aid=$aid");
 			$url = "https://bilibili.com/video/av$aid?p=$part";
@@ -92,13 +95,14 @@ class BiliGet {
 		}
 		if ( !empty( self::url2bvid($input) ) ) {
 			$bvid_data = ( count($input_arr) == 1 ) ? self::url2bvid($input) : self::url2bvid($input_arr);
-			$bvid = $bvid_data['aid'];
-			$part = $bvid_data['part'];
+			$bvid = $bvid_data[0];
+			$part = $bvid_data[1];
 			$id = "BV$bvid";
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?bvid=$bvid");
 			$url = "https://bilibili.com/video/BV$bvid";
 			if( !empty($part) ) $link .= "?p=$part";
 		}
+		if ( empty($bvid) || empty($aid) ) return '';
 		$code = $data['code']; //判断响应代码
 		if ($code==0) {
 			$cover = $data['data']['pic'];
@@ -115,7 +119,7 @@ class BiliGet {
 					{{#vardefine:标题|$title}}
 					{{#vardefine:发布日期|$pubdate}}
 					{{#vardefine:视频时长|$duaration}}
-					", $frame);
+					", $frame); //@require https://www.mediawiki.org/wiki/Extension:Variables
 				return $output;
 			}
 			else if ( !empty($argv['type'] ) ) {

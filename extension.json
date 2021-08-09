@@ -22,7 +22,7 @@
 	"ResourceModules": {
 		"ext.biliget.list":{
 			"styles": [
-				"biliget.list.css"
+				"biliget.list.min.css"
 			]
 		}
 	},
