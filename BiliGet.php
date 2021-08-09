@@ -4,6 +4,7 @@
  * @ingroup Extensions
  * @author KUMAX
  * @license GPL-3.0-or-later
+ * @todo 并行处理多个请求
  */
 class BiliGet {
 	/*
@@ -11,69 +12,62 @@ class BiliGet {
 	 */
 	public static function registerTags( &$parser ) {
 		$parser->setHook( 'biliget' , [ __CLASS__ , 'getInfo' ] );
-		$parser->setHook( 'biligetraw' , [ __CLASS__ , 'rawInfo' ] );
 	}
 	/*
 	* @see https://www.runoob.com/php/php-ref-curl.html#div-comment-36119
 	*/
-	public static function getUrl($url, $cookie = NULL) {
-		# header( 'Referrer-Policy: no-referrer' ); // 在客户端收到 403 时请将这行加入mediawiki/indludes/WebStart.php
+	public static function getUrl($url) {
 		$headerArray = array("Content-type:application/json;","Accept:application/json");
+		//$headerArray[] = "Origin: https://www.bilibili.com";
+		//$userAgent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 Safari/537.36";
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		//curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
+		if(!empty($wfSetBiliCookie))curl_setopt($ch, CURLOPT_COOKIE, $wfSetBiliCookie);
 		if(!empty($aid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/av$aid");
-		else if(!empty($bid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/BV$bvid");
+		if(!empty($bid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/BV$bvid");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
 		$output = curl_exec($ch);
 		curl_close($ch);
 		$output = json_decode($output,true);
 		return $output;
 	}
-	/*public static function getMultiUrl($url,cookie = NULL) {
-		$headerArray = array("Content-type:application/json;","Accept:application/json");
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		if(!empty($aid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/av$aid");
-		else if(!empty($bid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/BV$bvid");
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
-		$output = curl_exec($ch);
-		curl_close($ch);
-		$output = json_decode($output,true);
+	/*public static function getMultiUrl($url) {
 		return $output;
 	}*/
 
 	public static function url2aid($url) {
-		$aid_data=NULL;
+		$aid_data = [];
 		$aid_pattern = "#(?:https?:\/\/(?:www\.)?bilibili\.com\/video\/)?av(\d+)(\?p=\d{1,3})?#";
 		if(preg_match($aid_pattern, $url, $preg)) {
 			$aid_data = [
 				'aid' => $preg[1],
-				'part' => $perg[2]
+				'part' => $preg[2]
 			];
 		}
 		return $aid_data;
 	}
 	public static function url2bvid($url) {
-		$bvid_data=NULL;
+		$bvid_data = [];
 		$bvid_pattern = "#(?:https?:\/\/(?:www\.)?bilibili\.com\/video\/)?BV([a-zA-Z0-9]+)(\?p=\d{1,3})?#";
 		if(preg_match($bvid_pattern, $url, $preg)) {
-			$aid_data = [
+			$bvid_data = [
 				'bvid' => $preg[1],
-				'part' => $perg[2]
+				'part' => $preg[2]
 			];
 		}
 		return $bvid_data;
 	}
 	public static function handleDesc($text) {
-		$pattern = "##";
-		return 0;	//@todo 简介文字的处理
-	}
+		$vid_pattern = "#(BV[a-zA-Z0-9]+|(av|sm|ac|om)(\d+)|watch\?v=[a-zA-Z0-9])#";
+		$url_pattern = "/https?:\/\/(www\.)?[a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([a-zA-Z0-9()@:%_\+.~#?&//=]*)/m"; //@see https://stackoverflow.com/a/3809435
+		$output_desc = preg_replace($url_pattern, "<a href=\"$1\">$1</a>", trim($text));
+		return $output_desc;
+	} //@todo 简介文字的处理
+
 	/*
 	 * @param Parser &$parser
 	 * @param string $input
@@ -81,29 +75,31 @@ class BiliGet {
 	 * @param PPFrame $frame
 	 */
 	public static function getInfo($input, $argv, $parser, $frame) {
-		global $wfSetCookie;
+		global $wfSetBiliCookie;
 		$parser->getOutput()->addModules('ext.biliget.list');
-		$input_arr = explode("\n", $input);
+		$input_arr = explode("
+		", $input);
 		if ( !empty( self::url2aid($input) ) ) {
-			$aid_data = ( count($input_arr) == 1 ) ? self::url2aid($input) : self::url2aid($input_arr);
-			$aid = $aid_data[0];
-			$part = $aid_data[1];
+			$aid_data = ( count($input_arr) == 1 ) ? self::url2aid($input) : self::url2aid($input_arr); //@todo 使用遍历方式转换视频id
+			$aid = $aid_data['aid'];
+			$part = $aid_data['part'];
 			$id = "av$aid";
-			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?aid=$aid");
+			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?aid=$aid", $wfSetBiliCookie);
 			$url = "https://bilibili.com/video/av$aid?p=$part";
 			if( !empty($part) ) $link .= "?p=$part";
 		}
 		if ( !empty( self::url2bvid($input) ) ) {
 			$bvid_data = ( count($input_arr) == 1 ) ? self::url2bvid($input) : self::url2bvid($input_arr);
-			$bvid = $bvid_data[0];
-			$part = $bvid_data[1];
+			$bvid = $bvid_data['bvid'];
+			$part = $bvid_data['part'];
 			$id = "BV$bvid";
 			$data = self::getUrl("https://api.bilibili.com/x/web-interface/view?bvid=$bvid");
 			$url = "https://bilibili.com/video/BV$bvid";
 			if( !empty($part) ) $link .= "?p=$part";
 		}
-		if ( empty($bvid) || empty($aid) ) return '';
-		$code = $data['code']; //判断响应代码
+		if ( empty($id) ) return '';
+
+		$code = $data['code']; // 判断响应代码
 		if ($code==0) {
 			$cover = $data['data']['pic'];
 			$uploader = $data['data']['owner']['name'];
@@ -123,7 +119,7 @@ class BiliGet {
 					//@require https://www.mediawiki.org/wiki/Extension:Variables
 				return $output;
 			}
-			else if ( !empty($argv['type'] ) ) {
+			else if ( !empty($argv['type'] ) ) { // 处理 type 参数
 				$type = array(
 					'封面' => $cover,
 					'UP主'=> $uploader, 
@@ -132,10 +128,16 @@ class BiliGet {
 					'发布日期' => $pubdate,
 					'时长' => $duration
 					);
-				$name = $argv['type'];
-				return $type[trim($name)];
+				if ( strpos($argv['type'], " ") ) {
+					$output = '';
+					foreach ($type as $key => $value) {
+						$output .= "{{#vardefine:$key|$value}}";
+					}
+					return $parser->recursiveTagParse($output, $frame);
+				}
+				return $type[trim($argv['type'])];
 			}
-			else {
+			else { // 默认输出
 				return "
 				<div class=\"bili-info-card\">
 					<div class=\"bili-info\">
@@ -151,7 +153,8 @@ class BiliGet {
 				</div>";
 					}
 				}
-		else {
+
+		else {// 收到错误代码
 			$message = $data['message'];
 			return "
 				<div class=\"bili-info-card\">
@@ -165,10 +168,4 @@ class BiliGet {
 		}
 	//@todo 简介折叠、链接和作品号自动变蓝
 	}
-	public static function rawInfo($input, $argv, $parser, PPFrame $frame) {
-		$type = ['type' => 'raw'];
-		$info = self::getInfo($input, $type, $parser);
-		$output = $parser->recursiveTagParse("{{#vardefine:info|$info}}", $frame);
-		return $output;
-	}// 仅用于debug
 }

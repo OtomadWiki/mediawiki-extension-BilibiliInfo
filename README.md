@@ -10,6 +10,19 @@ git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet
 ```
 2. 返回 MediaWiki 主目录，在 ```LocalSettings.php``` 文件中添加一行：<br />```wfLoadExtension( 'BIliGet' );```
 
+## 配置
+### 设置 Cookie
+在 ```LocalSettings.php``` 中加入以下内容以设置请求 Cookie：
+```PHP
+$wfSetBiliCookie = 'Cookie 范例'
+```
+
+### Hack
+若客户遇到了无法接收封面图片的问题，请将以下代码加入到 MediaWiki 主目录的 ```includes/WebStart.php``` 内：
+```PHP
+header( 'Referrer-Policy: no-referrer' );
+```
+
 ## 使用方法
 ```HTML
 <div class="bili-info-container">
@@ -30,7 +43,7 @@ git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet
 <biliget type="指定的信息类型">av号或者BV号 或者B站视频地址</biliget>
 ```
 目前允许输出的基本信息：
-* 封面 - 将会输出原始的超链接文本
+* 封面 - 将会输出原始的超链接文本（不变蓝）
 * UP主 - 将会输出该视频UP主的用户名
 * 标题 - 将会输出完整的视频标题
 * 简介
