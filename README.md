@@ -1,7 +1,7 @@
 # BiliGet
 用于获取 bilibili 视频信息的 MediaWiki 插件
 
-知请求多次会被 412 以及 403，需要改进请求方法。请勿在同一页面内过多使用。
+已知请求多次会被 412 以及 403，需要改进请求方法。请勿在同一页面内过多使用。
 
 ## 安装
 1. 进入 ```mediawiki/extensions``` 目录，使用如下命令：
@@ -47,9 +47,9 @@ git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet
 - [x] 输出单独信息
 - [x] 设置请求 Cookie
 - [ ] 允许同一标签内放置多个作品号或者链接
-- [x] 视频简介折叠
+- [x] 视频简介折叠（用 overflow 属性隐藏了多余部分）
 - [ ] 简介中的链接和作品号自动变蓝
 - [ ] 并行发送请求
-- [x] 请求返回结果缓存（已知保存页面后 MediaWiki 会进行缓存）
+- [x] 请求返回结果缓存（实测保存页面后 MediaWiki 会缓存内容一段时间）
 - [ ] 样式调整
-- [ ] 客户端调用api（失败 请求被阻止）
+- [x] ~~客户端调用api~~（失败了 请求被浏览器阻止）
