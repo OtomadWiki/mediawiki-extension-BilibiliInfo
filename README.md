@@ -8,7 +8,7 @@
 ```shell
 git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet --depth=1
 ```
-2. 返回 MediaWiki 主目录，在 ```LocalSettings.php``` 文件中添加一行：<br />```wfLoadExtension( 'BIliGet' );```
+2. 返回 MediaWiki 主目录，在 ```LocalSettings.php``` 文件中添加一行：<br />```wfLoadExtension( 'BiliGet' );```
 
 ## 配置
 ### 设置 Cookie
