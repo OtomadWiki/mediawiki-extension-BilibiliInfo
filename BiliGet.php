@@ -141,7 +141,7 @@ class BiliGet {
 				return "
 				<div class=\"bili-info-card\">
 					<div class=\"bili-info\">
-						<div class=\"bili-info-cover\"><img src=\"$cover\" width=\"160px\" /></div>
+						<div class=\"bili-info-cover\"><img src=\"$cover\" width=\"160px\" loading=\"lazy\" /></div>
 						<p class=\"bili-info-duration\">$duration</p>
 					</div>
 					<div class=\"bili-info\">
