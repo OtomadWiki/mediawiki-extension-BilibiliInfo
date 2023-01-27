@@ -29,6 +29,7 @@ $wfSetUserAgent = '在此填入 User-Agent'
 
 ### Hack
 **注意：不应在生产环境中使用，可能会导致 MediaWiki 更新出现问题**
+
 若客户遇到了无法接收封面图片的问题，请将以下代码加入到 MediaWiki 主目录的 ```includes/WebStart.php``` 内：
 ```PHP
 header( 'Referrer-Policy: no-referrer' );
