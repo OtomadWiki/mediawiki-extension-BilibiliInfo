@@ -3,10 +3,14 @@
 
 已知请求多次会被 412 以及 403，需要改进请求方法。请勿在同一页面内过多使用。
 
+## 需求
+* MediaWiki 1.34 (或以上版本)
+* php-curl
+
 ## 安装
 1. 进入 ```mediawiki/extensions``` 目录，使用如下命令：
 ```shell
-git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet --depth=1
+git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet
 ```
 2. 返回 MediaWiki 主目录，在 ```LocalSettings.php``` 文件中添加一行：<br />```wfLoadExtension( 'BiliGet' );```
 
