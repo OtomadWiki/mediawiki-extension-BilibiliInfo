@@ -4,7 +4,7 @@
 已知请求多次会被 412 以及 403，需要改进请求方法。请勿在同一页面内过多使用。
 
 ## 需求
-* MediaWiki 1.34 (或以上版本)
+* MediaWiki 1.35 (或以上版本)
 * php-curl
 
 ## 安装
@@ -16,12 +16,19 @@ git clone https://github.com/OtomadWiki/mediawiki-extension-BilibiliInfo BiliGet
 
 ## 配置
 ### 设置 Cookie
-在 ```LocalSettings.php``` 中加入以下内容以设置请求 Cookie：
+在 ```LocalSettings.php``` 中加入以下内容以设置 Cookie：
 ```PHP
-$wfSetBiliCookie = 'Cookie 范例'
+$wfSetBiliCookie = '在此填入 Cookie'
+```
+
+### 设置 UserAgent
+在 ```LocalSettings.php``` 中加入以下内容以设置 User-Agent：
+```PHP
+$wfSetUserAgent = '在此填入 User-Agent'
 ```
 
 ### Hack
+**注意：不应在生产环境中使用，可能会导致 MediaWiki 更新出现问题**
 若客户遇到了无法接收封面图片的问题，请将以下代码加入到 MediaWiki 主目录的 ```includes/WebStart.php``` 内：
 ```PHP
 header( 'Referrer-Policy: no-referrer' );
@@ -69,4 +76,4 @@ header( 'Referrer-Policy: no-referrer' );
 - [ ] 并行发送请求
 - [x] 请求返回结果缓存（实测保存页面后 MediaWiki 会缓存内容一段时间）
 - [ ] 样式调整
-- [x] ~~客户端调用api~~（失败了 请求被浏览器阻止）
+- [ ] ~~客户端调用api~~（失败了 请求被浏览器阻止）
