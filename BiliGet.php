@@ -82,7 +82,7 @@ class BiliGet {
         $input_arr = explode("
         ", $input);
         if ( !empty( self::url2aid($input) ) ) {
-            $aid_data = ( count($input_arr) == 1 ) ? self::url2aid($input) : self::url2aid($input_arr); //@todo 使用遍历方式转换视频id
+            $aid_data = ( count($input_arr) == 1 ) ? self::url2aid($input) : self::url2aid($input_arr);
             $aid = $aid_data['aid'];
             $part = $aid_data['part'];
             $id = "av$aid";
