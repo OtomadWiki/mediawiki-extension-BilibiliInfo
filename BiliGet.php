@@ -22,15 +22,15 @@ class BiliGet {
         $headerArray = array("Content-type:application/json;","Accept:application/json");
         //$headerArray[] = "Origin: https://www.bilibili.com";
         //$userAgent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 Safari/537.36";
-        if(!empty($wfSetBiliCookie))curl_setopt($ch, CURLOPT_COOKIE, $wfSetBiliCookie);
-        if(!empty($aid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/av$aid");
-        if(!empty($bid))curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/BV$bvid");
+        if(!empty($wfSetUserAgent)) curl_setopt($ch, CURLOPT_USERAGENT, $wfSetUserAgent);
+        if(!empty($wfSetBiliCookie)) curl_setopt($ch, CURLOPT_COOKIE, $wfSetBiliCookie);
+        if(!empty($aid)) curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/av$aid");
+        if(!empty($bid)) curl_setopt($ch, CURLOPT_REFERER, "https://www.bilibili.com/BV$bvid");
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        //curl_setopt($ch, CURLOPT_USERAGENT, $userAgent);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerArray);
         $output = curl_exec($ch);
         curl_close($ch);
@@ -77,6 +77,7 @@ class BiliGet {
      */
     public static function getInfo($input, $argv, $parser, $frame) {
         global $wfSetBiliCookie;
+        global $wfSetUserAgent;
         $parser->getOutput()->addModules('ext.biliget.list');
         $input_arr = explode("
         ", $input);
